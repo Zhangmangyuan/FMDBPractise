@@ -11,6 +11,7 @@
 #import "JSONKit.h"
 #import "UIImageView+AFNetworking.h"
 #import "MyCustomCell.h"
+#import "HeaderViewController.h"
 
 @interface MainViewController ()
 
@@ -53,7 +54,7 @@
     AFHTTPRequestOperation * operation = [[AFHTTPRequestOperation alloc]initWithRequest:request];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSDictionary * dic_json = [operation.responseString objectFromJSONString];
-        DLog(@"dic_json = %@",dic_json);
+        NSLog(@"dic_json = %@",dic_json);
         NSArray * posts = [dic_json valueForKey:@"posts"];
         for (NSDictionary * item in posts) {
             NSMutableDictionary * allDic = [[NSMutableDictionary alloc]init];
@@ -86,7 +87,7 @@
         [self.tableView tableViewDidFinishedLoading];
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        DLog(@"Failure : %@",error);
+        NSLog(@"Failure : %@",error);
     }];
      
     [operation start];
@@ -102,23 +103,24 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.dataArray count];
+//    return [self.dataArray count];
+    return 15;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    MyCustomCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     // Configure the cell...
     if (cell == nil) {
-        cell = [[MyCustomCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-
+/*
     [cell.imageView setImageWithURL:[NSURL URLWithString:[[self.dataArray objectAtIndex:indexPath.row] valueForKey:@"thumbnailurl"]] placeholderImage:nil];
     cell.label1.text = [[self.dataArray objectAtIndex:indexPath.row] valueForKey:@"title"];
     cell.label2.text = [[self.dataArray objectAtIndex:indexPath.row] valueForKey:@"content"];
-    
+*/    
     
     return cell;
 }
@@ -129,12 +131,13 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 64;
+    return 44;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    HeaderViewController * headerVC = [[HeaderViewController alloc]init];
+    [self.navigationController pushViewController:headerVC animated:YES];
 }
 
 #pragma mark -
@@ -149,26 +152,26 @@
 
 //下拉刷新时走的方法
 - (void)pullingTableViewDidStartRefreshing:(PullingRefreshTableView *)tableView{
-    DLog(@"和大家按考核等级");
-    DLog(@"%s - [%d]",__FUNCTION__,__LINE__);
+    NSLog(@"和大家按考核等级");
+    NSLog(@"%s - [%d]",__FUNCTION__,__LINE__);
     [self requestDoenNetworking];
     [self performSelector:@selector(loadData) withObject:nil afterDelay:1.f];
 }
 
 
 - (NSDate *)pullingTableViewRefreshingFinishedDate{
-    DLog(@"%s - [%d]",__FUNCTION__,__LINE__);
+    NSLog(@"%s - [%d]",__FUNCTION__,__LINE__);
     NSDateFormatter *df = [[NSDateFormatter alloc] init ];
     df.dateFormat = @"yyyy-MM-dd HH:mm";
     NSString *dateStr = [df stringFromDate:[NSDate date]];
     NSDate *date = [df dateFromString:dateStr];
-    //DLog(@"%@",dateStr);
+    //NSLog(@"%@",dateStr);
     return date;
 }
 
 //上拉刷新时走的方法
 - (void)pullingTableViewDidStartLoading:(PullingRefreshTableView *)tableView{
-    DLog(@"%s - [%d]",__FUNCTION__,__LINE__);
+    NSLog(@"%s - [%d]",__FUNCTION__,__LINE__);
     self.refreshing = YES;
 //    [self RequesetUpNetWork];
     [self performSelector:@selector(loadData) withObject:nil afterDelay:1.f];
